@@ -1,0 +1,84 @@
+const Discord = require("discord.js");
+const Enmap = require("enmap");
+const fs = require("fs");
+const axios = require("axios")
+
+const client = new Discord.Client();
+const config = require("./config.json");
+// Set the prefix
+client.config = config;
+
+const autoJoinChannels = new Enmap({
+  name: "autoJoinChannels",
+  autoFetch: true,
+  fetchAll: false
+});
+//Bind to 'client'
+client.autoJoinChannels = autoJoinChannels
+
+fs.readdir("./events/", (err, files) => {
+  if (err) return console.error(err);
+  files.forEach(file => {
+    const event = require(`./events/${file}`);
+    let eventName = file.split(".")[0];
+    client.on(eventName, event.bind(null, client));
+  });
+});
+
+client.commands = new Enmap();
+
+fs.readdir("./commands/", (err, files) => {
+  if (err) return console.error(err);
+  files.forEach(file => {
+    if (!file.endsWith(".js")) return;
+    let props = require(`./commands/${file}`);
+    let commandName = file.split(".")[0];
+    console.log(`Attempting to load command ${commandName}`);
+    client.commands.set(commandName, props);
+  });
+});
+
+client.on("guildMemberAdd", (member) => {
+  if(config.guilds.includes(member.guild.id)){ // only run when user joins my server
+    if(member.guild)
+    var guild = member.guild; // Reading property `guild` of guildmember object.
+    let memberTag = member.user.id; // GuildMembers don't have a tag property, read property user of guildmember to get the user object from it
+    if(guild.systemChannel){ // Checking if it's not null
+      guild.systemChannel.send("Welcome <@" + memberTag + "> to the server! Listen to ChickenFM in the voicechanel!");
+    }
+  }
+});
+
+client.on("voiceStateUpdate", function(oldMember, newMember){
+  let newUserChannel = newMember.voiceChannel
+  let oldUserChannel = oldMember.voiceChannel
+
+  if(oldUserChannel === undefined && newUserChannel !== undefined) {
+    if(client.autoJoinChannels.has(newMember.voiceChannelID)){
+      if(client.voiceConnections.get(newMember.guild.id)){
+        return;
+      }
+       //console.log('it worked!')
+       const connection = newMember.voiceChannel.join().then(connection => {
+        const dispatcher = connection.playStream('https://radio.chickenfm.com/radio/8000/radio.mp3');
+        dispatcher.setVolume(0.5);
+        });
+    }
+  } else if(newUserChannel === undefined){
+    if(client.channels.get(oldUserChannel.id).members.filter(member => !member.user.bot).size == 0) {
+      client.channels.get(oldUserChannel.id).leave()
+    }
+  }
+});
+
+function ListeningUpdate() {
+    axios.get('https://radio.chickenfm.com/api/nowplaying/1')
+      .then(r => client.user.setActivity(r.data.now_playing.song.artist + ' - ' + r.data.now_playing.song.title, { type: 'LISTENING' }) )
+}
+
+client.on('ready', () => {
+  ListeningUpdate()
+  setInterval(ListeningUpdate, 15000)
+})
+
+client.login(config.TOKEN);
