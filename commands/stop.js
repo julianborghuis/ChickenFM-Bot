@@ -8,3 +8,10 @@ exports.run = (client, message, args) => {
     message.reply('no')
   }
 }
+
+exports.info = {
+  name: `stop`,
+  aliases: ['leave'],
+  description: `Stop playing`,
+  usage: `stop`
+}

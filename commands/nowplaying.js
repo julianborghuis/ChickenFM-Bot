@@ -16,3 +16,10 @@ var request = require('request');
       message.channel.send(embed)
     })
 }
+
+exports.info = {
+  name: `nowplaying`,
+  aliases: ['np'],
+  description: `See what's now playing`,
+  usage: `nowplaying *or* np`
+}

@@ -4,7 +4,7 @@ exports.run = (client, message, args) => {
     if(!args[0]){
         return message.channel.send(new RichEmbed()
             .setTitle("AutoJoin command")
-            .setDescription(`To make ChickenFM automatically join the voice channel, simply join the voice channel you want to link me to and type \`${client.config.prefix}autojoin enable\``)
+            .setDescription(`To make ChickenFM automatically join the voice channel, simply join the voice channel you want to link me to and type \`${client.config.prefix[0]}autojoin enable\``)
             .addField(`Permissions needed`, "`MANAGE_CHANNELS`")
         );
     }
@@ -49,4 +49,11 @@ exports.run = (client, message, args) => {
         .setDescription(`I will not automatically join \`${message.member.voiceChannel.name}\` anymore!`)    
         )
     }
+}
+
+exports.info = {
+    name: `autojoin`,
+    aliases: [],
+    description: `Enables or disables autojoining of a voice channel`,
+    usage: `autojoin <enable or disable>`
 }

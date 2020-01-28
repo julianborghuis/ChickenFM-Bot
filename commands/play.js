@@ -11,3 +11,10 @@ exports.run = (client, message, args) => {
     message.reply('You need to join a voice channel first!');
   }
 }
+
+exports.info = {
+  name: `play`,
+  aliases: ['p'],
+  description: `Play ChickenFM in the users current voice channel.`,
+  usage: `play *or* p`
+}

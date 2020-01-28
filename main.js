@@ -26,6 +26,7 @@ fs.readdir("./events/", (err, files) => {
 });
 
 client.commands = new Enmap();
+client.commandAliases = new Enmap();
 
 fs.readdir("./commands/", (err, files) => {
   if (err) return console.error(err);
@@ -35,6 +36,14 @@ fs.readdir("./commands/", (err, files) => {
     let commandName = file.split(".")[0];
     console.log(`Attempting to load command ${commandName}`);
     client.commands.set(commandName, props);
+
+    if(props.info) {
+      if(props.info.aliases){
+        for(i = 0; i < props.info.aliases.length; i++){
+          client.commandAliases.set(props.info.aliases[i], props)
+        }
+      }
+    }
   });
 });
 

@@ -33,5 +33,4 @@ exports.info = {
     aliases: [],
     description: `Evaluate code!`,
     usage: `eval <code to eval>`,
-    category: `Owner Only`
-  }
+}

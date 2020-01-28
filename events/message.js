@@ -3,25 +3,28 @@ module.exports = (client, message) => {
   if (message.author.bot) return;
 
   // Ignore messages not starting with the prefix (in config.json)
-  if (message.content.indexOf(client.config.prefix) !== 0) return;
+  const prefixes = require('../config.json').prefix
+  let prefix = false;
+  for (const thisPrefix of prefixes) {
+      if (message.content.toLowerCase().startsWith(thisPrefix)) prefix = thisPrefix;
+  }
 
-  // Our standard argument/command name definition.
-  const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
+  // Ignore messages not starting with the prefix (in config.json)
+  if (message.content.toLowerCase().indexOf(prefix) !== 0) return;
+
+  const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
 
-  // Grab the command data from the client.commands Enmap
   const cmd = client.commands.get(command);
+  const alias = client.commandAliases.get(command)
 
-  // If that command doesn't exist, silently exit and do nothing
-  if (!cmd) {
-    message.reply("That command doesn't exist!");
-    return;
-  };
+  if (cmd) {
+    cmd.run(client, message, args);
+  } else if(alias){
+    alias.run(client, message, args)
+  }
   // If its a DM respond with a messages
   if (message.channel.type === 'dm') {
     return message.channel.send("Please join a server to use me \nJoin the ChickenFM Discord server here: https://l.chickenfm.com/discord");
   }
-
-  // Run the command
-  cmd.run(client, message, args);
 };

@@ -52,3 +52,9 @@ exports.run = (client, message, args) => {
         })
       })
 }
+exports.info = {
+  name: `request`,
+  aliases: ['r'],
+  description: `Request a song.`,
+  usage: `request <song title>`
+}
