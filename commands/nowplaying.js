@@ -2,7 +2,6 @@ const axios = require('axios')
 const Discord = require("discord.js")
 
 exports.run = (client, message, args) => {
-var request = require('request');
   axios.get(`https://api.chickenfm.com/api.php?station=1`)
     .then(r => {
       const data = r.data;
