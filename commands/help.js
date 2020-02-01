@@ -12,6 +12,7 @@ exports.run = (client, message, args) => {
         \`help\`: Displays this.
         \`nowplaying\` or \`np\`: Displays the current playing track.
         \`request\` or \`r\`: Request a song.
+        \`lyrics\` or \`l\`: Displays the lyrics of the current song.
 
         Remember to use one of these prefixes:  \`${client.config.prefix.join("`, `")}\`
 `)
