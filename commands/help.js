@@ -9,6 +9,7 @@ exports.run = (client, message, args) => {
         \`autojoin\`: Enables or disables the autojoin feature.
         \`play\` or \`p\`: Plays ChickenFM in the users current channel.
         \`stop\` or \`leave\`: Stops playing.
+        \`songs [page number]\`: Displays all available songs.
         \`help\`: Displays this.
         \`nowplaying\` or \`np\`: Displays the current playing track.
         \`request\` or \`r\`: Request a song.
