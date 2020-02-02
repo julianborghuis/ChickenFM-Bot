@@ -82,12 +82,32 @@ client.on("voiceStateUpdate", function(oldMember, newMember){
 
 function ListeningUpdate() {
     axios.get('https://radio.chickenfm.com/api/nowplaying/1')
-      .then(r => client.user.setActivity(r.data.now_playing.song.artist + ' - ' + r.data.now_playing.song.title, { type: 'LISTENING' }) )
+      .then(r => client.user.setActivity(`${r.data.now_playing.song.artist}  - ${r.data.now_playing.song.title} in ${client.guilds.size} servers`, { type: 'LISTENING' }) )
 }
 
 client.on('ready', () => {
   ListeningUpdate()
   setInterval(ListeningUpdate, 15000)
 })
+
+client.convertLength = (millisec) => {
+  // Credit: https://stackoverflow.com/questions/19700283/how-to-convert-time-milliseconds-to-hours-min-sec-format-in-javascript
+  var seconds = (millisec / 1000).toFixed(0);
+  var minutes = Math.floor(seconds / 60);
+  var hours = "";
+  if (minutes > 59) {
+    hours = Math.floor(minutes / 60);
+    hours = (hours >= 10) ? hours : "0" + hours;
+    minutes = minutes - (hours * 60);
+    minutes = (minutes >= 10) ? minutes : "0" + minutes;
+  }
+  // Normally I'd give notes here, but I actually don't understand how this code works.
+  seconds = Math.floor(seconds % 60);
+  seconds = (seconds >= 10) ? seconds : "0" + seconds;
+  if (hours != "") {
+    return hours + ":" + minutes + ":" + seconds;
+  }
+  return minutes + ":" + seconds;
+}
 
 client.login(config.TOKEN);
