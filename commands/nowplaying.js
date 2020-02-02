@@ -8,10 +8,10 @@ exports.run = (client, message, args) => {
       const embed = new Discord.RichEmbed()
         .setAuthor(client.user.username, client.user.avatarURL)
         .setTitle("Now playing:")
-        .setDescription(`${data.track.artist} - ${data.track.title}`)
-        .setTimestamp()
+        .setDescription(`${data.track.artist} - ${data.track.title}\n[${client.convertLength(data.elapsed * 1000)}/${client.convertLength(data.duration * 1000)}]`)
+        .setFooter(`Made by ${client.users.get(client.config.ownerID).tag}`)
         .setColor(3447003)
-        .setThumbnail(data.cover_xl)
+        .setImage(data.cover_medium)
       message.channel.send(embed)
     })
 }
