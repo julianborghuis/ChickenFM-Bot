@@ -4,7 +4,7 @@ const axios = require("axios").default
 exports.run = (client, message, args) => {
     axios.get("https://radio.chickenfm.com/api/nowplaying/1")
         .then(({data}) => {
-            const nowplaying = data.now_playing.song.text
+            const nowplaying = data.now_playing
             const nextSong = data.playing_next.song.text
             const songHistory = data.song_history.map((a, i) => {
                 return `**${i+1}**. ${a.song.text}`;
@@ -18,7 +18,7 @@ exports.run = (client, message, args) => {
 ${nextSong}
 
 🔊 **Now playing:**
-${nowplaying}
+${nowplaying.song.text} [${client.convertLength(nowplaying.elapsed * 1000)} / ${client.convertLength(nowplaying.duration * 1000)}]
 
 ⏪ **Previously played:**
 ${songHistory.join("\n")}
