@@ -1,5 +1,6 @@
 const { RichEmbed } = require("discord.js")
 const axios = require("axios").default
+const moment = require('moment')
 
 exports.run = (client, message, args) => {
     axios.get("https://radio.chickenfm.com/api/nowplaying/1")
@@ -7,7 +8,7 @@ exports.run = (client, message, args) => {
             const nowplaying = data.now_playing
             const nextSong = data.playing_next.song.text
             const songHistory = data.song_history.map((a, i) => {
-                return `**${i+1}**. ${a.song.text}`;
+                return `**${moment(a.played_at*1000).fromNow()}**. ${a.song.text}`;
             })
 
             const embed = new RichEmbed()
