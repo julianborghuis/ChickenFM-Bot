@@ -82,7 +82,7 @@ client.on("voiceStateUpdate", function(oldMember, newMember){
 
 function ListeningUpdate() {
     axios.get('https://radio.chickenfm.com/api/nowplaying/1')
-      .then(r => client.user.setActivity(`${r.data.now_playing.song.artist}  - ${r.data.now_playing.song.title} in ${client.guilds.size} servers`, { type: 'LISTENING' }) )
+      .then(r => client.user.setActivity(`${r.data.now_playing.song.artist}  - ${r.data.now_playing.song.title} | ${client.guilds.size} servers | c!help`, { type: 'LISTENING' }) )
 }
 
 client.on('ready', () => {
