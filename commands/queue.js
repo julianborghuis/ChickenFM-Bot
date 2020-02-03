@@ -6,14 +6,15 @@ exports.run = (client, message, args) => {
     axios.get("https://radio.chickenfm.com/api/nowplaying/1")
         .then(({data}) => {
             const nowplaying = data.now_playing
-            const nextSong = data.playing_next.song.text
+            const nextSong = `${data.playing_next.song.text} ${data.playing_next.is_request ? "**[Requested]**" : ""}`
             const songHistory = data.song_history.map((a, i) => {
-                return `**${moment(a.played_at*1000).fromNow()}**. ${a.song.text}`;
+                return `**${moment(a.played_at*1000).fromNow()}**. ${a.song.text} ${a.is_request ? "**[Requested]**" : ""}`;
             })
 
             const embed = new RichEmbed()
                 .setTitle("Queue for ChickenFM")
                 .setColor(3447003)
+                .setThumbnail(data.now_playing.song.art)
                 .setDescription(`
 ⏩ **Playing next:**
 ${nextSong}
