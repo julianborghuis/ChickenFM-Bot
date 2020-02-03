@@ -29,6 +29,7 @@ exports.run = (client, message, args) => {
             .setTitle("Song found!")
             .setColor("GREEN")
             .setDescription(`Requesting \`${queryData.song.text}\`...`)
+            .setThumbnail(queryData.song.art)
           )
         })
         axios.get(`https://radio.chickenfm.com/api/station/1/request/${queryData.request_id}`, { headers: { 'X-API-Key': client.config.azuracast } })
@@ -38,6 +39,7 @@ exports.run = (client, message, args) => {
               .setTitle(`Request \`${queryData.song.text}\``)
               .setDescription(r.data.message)
               .setColor("GREEN")
+              .setThumbnail(queryData.song.art)
             )
           })
         }).catch(e => {
@@ -47,6 +49,7 @@ exports.run = (client, message, args) => {
               .setColor("RED")
               .setTitle(`Request \`${queryData.song.text}\``)
               .setDescription(e.response.data.message)
+              .setThumbnail(queryData.song.art)
             )
           })
         })
