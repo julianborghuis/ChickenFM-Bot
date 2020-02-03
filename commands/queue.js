@@ -20,7 +20,7 @@ exports.run = (client, message, args) => {
 ${nextSong}
 
 🔊 **Now playing:**
-${nowplaying.song.text} [${client.convertLength(nowplaying.elapsed * 1000)} / ${client.convertLength(nowplaying.duration * 1000)}]
+${nowplaying.song.text} [${client.convertLength(nowplaying.elapsed * 1000)} / ${client.convertLength(nowplaying.duration * 1000)}] ${nowplaying.is_request ? "**[Requested]**" : ""}
 
 ⏪ **Previously played:**
 ${songHistory.join("\n")}
