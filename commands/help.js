@@ -1,7 +1,7 @@
-const { RichEmbed } = require("discord.js")
+const { MessageEmbed } = require("discord.js")
 
 exports.run = (client, message, args) => {
-    const embed  = new RichEmbed()
+    const embed  = new MessageEmbed()
         .setAuthor(client.user.username, client.user.avatarURL)
         .setTitle("Commands")
         .setColor(3447003)
