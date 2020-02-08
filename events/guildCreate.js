@@ -3,7 +3,7 @@ const Discord = require('discord.js')
 module.exports = (client, guild) => {
   // This event triggers when the bot joins a guild.
   console.log(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
-  const embed = new Discord.RichEmbed()
+  const embed = new Discord.MessageEmbed()
   .setTitle(`🎉 I was added to a new server!`)
   .setColor('GREEN')
   .setDescription(`I was added to ${guild.name}`)
