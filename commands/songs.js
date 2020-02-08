@@ -2,7 +2,7 @@ const axios = require("axios")
 const Discord = require("discord.js")
 
 exports.run = async (client, message, args) => {
-    const m = message.channel.send(new Discord.RichEmbed()
+    const m = message.channel.send(new Discord.MessageEmbed()
         .setTitle("Please wait...")
     )
 
@@ -16,7 +16,7 @@ exports.run = async (client, message, args) => {
             }
         })
     function sendSongs(arr, number = false){
-        const embed = new Discord.RichEmbed()
+        const embed = new Discord.MessageEmbed()
             .setTitle("Songs")
             .setColor(3447003);
         
