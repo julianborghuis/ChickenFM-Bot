@@ -9,7 +9,7 @@ exports.run = (client, message, args) => {
     
     const request = args.join(" ")
 
-    const m = message.channel.send(new Discord.RichEmbed()
+    const m = message.channel.send(new Discord.MessageEmbed()
       .setDescription(`Searching for \`${request}\``)
     )
     axios.get("https://radio.chickenfm.com/api/station/1/requests")
@@ -17,7 +17,7 @@ exports.run = (client, message, args) => {
         const queryData = r.data.find(e => e.song.text.toLowerCase().includes(request.toLowerCase()))
         if(!queryData){
           m.then(m => {
-            m.edit(new Discord.RichEmbed()
+            m.edit(new Discord.MessageEmbed()
               .setColor("RED")
               .setTitle("No songs found!")
             )
@@ -25,7 +25,7 @@ exports.run = (client, message, args) => {
           return;
         }
         m.then(m => {
-          m.edit(new Discord.RichEmbed()
+          m.edit(new Discord.MessageEmbed()
             .setTitle("Song found!")
             .setColor("GREEN")
             .setDescription(`Requesting \`${queryData.song.text}\`...`)
@@ -35,7 +35,7 @@ exports.run = (client, message, args) => {
         axios.get(`https://radio.chickenfm.com/api/station/1/request/${queryData.request_id}`, { headers: { 'X-API-Key': client.config.azuracast } })
         .then(r => {
           m.then(m => {
-            m.edit(new Discord.RichEmbed()
+            m.edit(new Discord.MessageEmbed()
               .setTitle(`Request \`${queryData.song.text}\``)
               .setDescription(r.data.message)
               .setColor("GREEN")
@@ -45,7 +45,7 @@ exports.run = (client, message, args) => {
         }).catch(e => {
           console.log(e.response)
           m.then(m => {
-            m.edit(new Discord.RichEmbed()
+            m.edit(new Discord.MessageEmbed()
               .setColor("RED")
               .setTitle(`Request \`${queryData.song.text}\``)
               .setDescription(e.response.data.message)
