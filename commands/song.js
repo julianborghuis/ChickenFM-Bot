@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js")
+const { MessageEmbed } = require("discord.js")
 const axios = require("axios")
 
 exports.run = (client, message, args) => {
@@ -7,7 +7,7 @@ exports.run = (client, message, args) => {
     }
     const searchQuery = args.join(" ")
 
-    const m = message.channel.send(new RichEmbed()
+    const m = message.channel.send(new MessageEmbed()
       .setDescription(`Searching for \`${searchQuery}\``)
     )
 
@@ -16,7 +16,7 @@ exports.run = (client, message, args) => {
             const searchResult = data.find(e => e.song.text.toLowerCase().includes(searchQuery.toLowerCase()))
             if(!searchResult){
                 m.then(m => {
-                    m.edit(new RichEmbed()
+                    m.edit(new MessageEmbed()
                       .setColor("RED")
                       .setTitle("Song not found!")
                     )
@@ -25,7 +25,7 @@ exports.run = (client, message, args) => {
             }
 
             m.then(m => {
-                m.edit(new RichEmbed()
+                m.edit(new MessageEmbed()
                     .setColor(3447003)
                     .setTitle(searchResult.song.title)
                     .setAuthor(searchResult.song.artist)
