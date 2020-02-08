@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js")
+const { MessageEmbed } = require("discord.js")
 const axios = require("axios").default
 const moment = require('moment')
 
@@ -11,7 +11,7 @@ exports.run = (client, message, args) => {
                 return `**${moment(a.played_at*1000).fromNow()}**. ${a.song.text} ${a.is_request ? "**[Requested]**" : ""}`;
             })
 
-            const embed = new RichEmbed()
+            const embed = new MessageEmbed()
                 .setTitle("Queue for ChickenFM")
                 .setColor(3447003)
                 .setThumbnail(data.now_playing.song.art)
