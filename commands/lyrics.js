@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 
 exports.run = (client, message, args) => {
 
-    const m = message.channel.send(new Discord.RichEmbed()
+    const m = message.channel.send(new Discord.MessageEmbed()
         .setColor(3447003)
         .setTitle("One moment...")
     )
@@ -40,27 +40,27 @@ exports.run = (client, message, args) => {
               }
             function sendIt(msg, first, last){
               if(first && last){
-                var embed = new Discord.RichEmbed()
+                var embed = new Discord.MessageEmbed()
                 .setAuthor(song)
                 .setColor('BLUE')
                 .setDescription(msg)
                 .setFooter(`Requested by ${requestedBy} | Lyrics provided by KSoft`, message.author.avatarURL);
                 message.channel.send(embed) 
               }else if(first){
-                  var embed = new Discord.RichEmbed()
+                  var embed = new Discord.MessageEmbed()
                   .setAuthor(song)
                   .setColor('BLUE')
                   .setDescription(msg);
                   message.channel.send(embed) 
               } else if (last){
-                  var embed = new Discord.RichEmbed()
+                  var embed = new Discord.MessageEmbed()
                   .setDescription(msg)
                   .setColor('BLUE')
                   .setFooter(`Requested by ${requestedBy} | Lyrics provided by KSoft.Si`, message.author.avatarURL);
                   message.channel.send(embed) 
                   return;
               } else if (!first && !last) {
-                  var embed = new Discord.RichEmbed()
+                  var embed = new Discord.MessageEmbed()
                   .setDescription(msg)
                   .setColor('BLUE');
                   message.channel.send(embed)
@@ -73,7 +73,7 @@ exports.run = (client, message, args) => {
             })
             // handle error
             console.log(`oof`);
-            var embed = new Discord.RichEmbed()
+            var embed = new Discord.MessageEmbed()
                 .setTitle(`❌ Error`)
                 .setColor(`RED`)
                 .setDescription(`Couldn't find lyrics for ${q}`)
