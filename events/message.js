@@ -19,9 +19,17 @@ module.exports = (client, message) => {
   const alias = client.commandAliases.get(command)
 
   if (cmd) {
-    cmd.run(client, message, args);
+    try {
+      cmd.run(client, message, args);
+    } catch(e) {
+      console.log(e)
+    }
   } else if(alias){
-    alias.run(client, message, args)
+    try {
+      alias.run(client, message, args)
+    } catch(e) {
+      console.log(e)
+    }
   }
   // If its a DM respond with a messages
   if (message.channel.type === 'dm') {
