@@ -58,24 +58,25 @@ client.on("guildMemberAdd", (member) => {
   }
 });
 
-client.on("voiceStateUpdate", function(oldMember, newMember){
-  let newUserChannel = newMember.voiceChannel
-  let oldUserChannel = oldMember.voiceChannel
+client.on("voiceStateUpdate", async function(oldState, newState){
+  let newMember = newState.member
+  let oldMember = oldState.member
+  let newUserChannel = newState.channel
+  let oldUserChannel = oldState.channel
 
-  if(oldUserChannel === undefined && newUserChannel !== undefined) {
-    if(client.autoJoinChannels.has(newMember.voiceChannelID)){
-      if(client.voiceConnections.get(newMember.guild.id)){
+  if(!oldUserChannel&& newUserChannel !== undefined) {
+    if(client.autoJoinChannels.has(newMember.voice.channel.id)){
+      if(client.voice.connections.get(newMember.guild.id)){
         return;
       }
-       //console.log('it worked!')
-       const connection = newMember.voiceChannel.join().then(connection => {
-        const dispatcher = connection.playStream('https://radio.chickenfm.com/radio/8000/radio.mp3');
-        dispatcher.setVolume(0.5);
-        });
+      //console.log('it worked!')
+      const connection = await newUserChannel.join()
+      connection.play(client.broadcast)
+      connection.volume
     }
-  } else if(newUserChannel === undefined){
-    if(client.channels.get(oldUserChannel.id).members.filter(member => !member.user.bot).size == 0) {
-      client.channels.get(oldUserChannel.id).leave()
+  } else if(!newUserChannel){
+    if(oldUserChannel.members.filter(member => !member.user.bot).size == 0) {
+      oldUserChannel.leave()
     }
   }
 });
@@ -88,6 +89,10 @@ function ListeningUpdate() {
 client.on('ready', () => {
   ListeningUpdate()
   setInterval(ListeningUpdate, 15000)
+
+  client.broadcast = client.voice.createBroadcast();
+  client.dispatcher = client.broadcast.play("http://78.46.148.53:8000/radio.mp3")
+  client.dispatcher.setVolume(0.5)
 })
 
 client.convertLength = (millisec) => {
