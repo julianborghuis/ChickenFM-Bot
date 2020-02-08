@@ -5,7 +5,7 @@ exports.run = (client, message, args) => {
   axios.get(`https://api.chickenfm.com/api.php?station=1`)
     .then(r => {
       const data = r.data;
-      const embed = new Discord.RichEmbed()
+      const embed = new Discord.MessageEmbed()
         .setAuthor(client.user.username, client.user.avatarURL)
         .setTitle("Now playing:")
         .setDescription(`${data.track.artist} - ${data.track.title}\n[${client.convertLength(data.elapsed * 1000)}/${client.convertLength(data.duration * 1000)}]`)
