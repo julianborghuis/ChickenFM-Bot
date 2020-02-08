@@ -1,4 +1,4 @@
-const { RichEmbed } = require("discord.js")
+const { MessageEmbed } = require("discord.js")
 
 exports.run = (client, message, args) => {
     if(![client.config.ownerID].some(a => message.author.id == a))
@@ -10,13 +10,13 @@ exports.run = (client, message, args) => {
     async function ls() {
         const { stdout, stderr } = await exec(args.join(" "))
         .catch(e => {
-            const embed = new RichEmbed()
+            const embed = new MessageEmbed()
                 .setColor("RED")
                 .setTitle(`Command execution failed`)
                 .setDescription(`\`\`\`xl\n${e}\`\`\``)
             message.channel.send(embed);
         })
-        const embed = new RichEmbed()
+        const embed = new MessageEmbed()
             .setColor(stderr ? "RED" : "GREEN")
             .setTitle(`Command execution ${stderr ? "failed" : "succeeded"}`)
             .setDescription(`\`\`\`xl\n${stderr ? stderr : stdout}\`\`\``)
