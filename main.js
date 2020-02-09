@@ -2,10 +2,18 @@ const Discord = require("discord.js");
 const Enmap = require("enmap");
 const fs = require("fs");
 const axios = require("axios")
+const DBL = require("dblapi.js");
 
 const client = new Discord.Client();
 const config = require("./config.json");
-// Set the prefix
+
+let dbl;
+try {
+  dbl = new DBL(config.DBLApiKey, client);
+} catch (e) {}
+client.dbl = dbl;
+
+// Set the config
 client.config = config;
 
 const autoJoinChannels = new Enmap({
@@ -93,6 +101,13 @@ client.on('ready', () => {
   client.broadcast = client.voice.createBroadcast();
   client.dispatcher = client.broadcast.play("http://78.46.148.53:8000/radio.mp3")
   client.dispatcher.setVolume(0.5)
+
+  client.dbl.postStats(client.guilds.size);
+  client.on('ready', () => {
+    setInterval(() => {
+        client.dbl.postStats(client.guilds.size);
+    }, 1800000);
+});
 })
 
 client.convertLength = (millisec) => {
