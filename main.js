@@ -9,7 +9,8 @@ const config = require("./config.json");
 
 let dbl;
 try {
-  dbl = new DBL(config.DBLApiKey, client);
+  dbl = new DBL(config.DBLApiKey, client)
+  .catch(e => e)
 } catch (e) {}
 client.dbl = dbl;
 
@@ -79,8 +80,9 @@ client.on("voiceStateUpdate", async function(oldState, newState){
       }
       //console.log('it worked!')
       const connection = await newUserChannel.join()
-      connection.play(client.broadcast)
-      connection.volume
+      client.getBroadcast().then(bc => {
+        connection.play(bc)
+      })
     }
   } else if(!newUserChannel){
     if(oldUserChannel.members.filter(member => !member.user.bot).size == 0) {
@@ -98,15 +100,46 @@ client.on('ready', () => {
   ListeningUpdate()
   setInterval(ListeningUpdate, 15000)
 
-  client.broadcast = client.voice.createBroadcast();
-  client.dispatcher = client.broadcast.play("http://78.46.148.53:8000/radio.mp3")
-  client.dispatcher.setVolume(0.5)
+  client.getBroadcast = async () => {
+    return new Promise((resolve, reject) => {
+      if(client.voice.connections.size === 0 || !client.broadcast || !client.dispatcher.writable) {
+        client.broadcast = client.voice.createBroadcast();
+        client.dispatcher = client.broadcast.play("http://78.46.148.53:8000/radio.mp3")
+        client.dispatcher.setVolume(0.5)
+        client.broadcast.on("unsubscribe", dispatcher => {
+          setTimeout(() =>{
+            if(client.voice.connections.size == 0){
+              try {
+                client.dispatcher.end()
+              } catch(e) {
+                void(e)
+              }
+            }
+          }, 1000)
+        })
+        client.broadcast.on("subscribe", dispatcher => {
+          const embed =  new Discord.MessageEmbed()
+            .setColor("GREEN")
+            .setTitle("Playing in a new server!")
+            .setDescription(`I am now playing in \`${dispatcher.player.voiceConnection.channel.name}\` in \`${dispatcher.player.voiceConnection.channel.guild.name}\`.`)
+          client.channels.get(client.config.statsChannel).send(embed)
+        })
+        resolve(client.broadcast)
+      } else if(client.broadcast){
+        resolve(client.broadcast)
+      }
+    })
+  }
 
-  client.dbl.postStats(client.guilds.size);
+
+
   client.on('ready', () => {
-    setInterval(() => {
+    if(client.dbl) {
+      client.dbl.postStats(client.guilds.size);
+      setInterval(() => {
         client.dbl.postStats(client.guilds.size);
     }, 1800000);
+    }
 });
 })
 
