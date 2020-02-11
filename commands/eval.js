@@ -19,7 +19,13 @@ exports.run = (client, message, args) => {
             .setColor('GREEN')
             .setTitle('Evaluation: Success')
             .setDescription(`\`\`\`xl\n${clean(evaled)}\n\`\`\``)
-        message.channel.send(embed);
+        message.channel.send(embed).catch(err => {
+            const embed = new Discord.MessageEmbed()
+            .setColor('RED')
+            .setTitle('Evaluation: Error')
+            .setDescription(`\`\`\`xl\n${clean(err)}\n\`\`\``)
+        message.channel.send(embed);   
+        })
     } catch (err) {
         const embed = new Discord.MessageEmbed()
             .setColor('RED')
