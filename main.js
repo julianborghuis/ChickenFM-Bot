@@ -3,6 +3,8 @@ const Enmap = require("enmap");
 const fs = require("fs");
 const axios = require("axios")
 const DBL = require("dblapi.js");
+const WebSocket = require('ws');
+
 
 const client = new Discord.Client();
 const config = require("./config.json");
@@ -10,7 +12,7 @@ const config = require("./config.json");
 let dbl;
 try {
   dbl = new DBL(config.DBLApiKey, client)
-  .catch(e => e)
+  .catch(e => {})
 } catch (e) {}
 client.dbl = dbl;
 
@@ -91,14 +93,37 @@ client.on("voiceStateUpdate", async function(oldState, newState){
   }
 });
 
-function ListeningUpdate() {
-    axios.get('https://radio.chickenfm.com/api/nowplaying/1')
-      .then(r => client.user.setActivity(`${r.data.now_playing.song.artist}  - ${r.data.now_playing.song.title} | ${client.guilds.size} servers | c!help`, { type: 'LISTENING' }) )
+var ws;
+
+const initWS = () => {
+  const ws = new WebSocket('wss://radio.chickenfm.com/api/live/nowplaying/chickenfm');
+  
+  ws.on('open', () => {
+    console.log("[WS] Ready!")
+  });
+  
+  ws.on('message', data => {
+    client.apiRes = JSON.parse(data)
+    client.user.setActivity(`${client.apiRes.now_playing.song.artist}  - ${client.apiRes.now_playing.song.title} | ${client.guilds.size} servers | c!help`, { type: 'LISTENING' })
+  });
+  
+  ws.on('close', () => {
+    initWS()
+  })
 }
 
+
 client.on('ready', () => {
-  ListeningUpdate()
-  setInterval(ListeningUpdate, 15000)
+  console.log("[D.JS] Ready!")
+
+  initWS()
+
+  if(client.dbl) {
+    client.dbl.postStats(client.guilds.size);
+    setInterval(() => {
+      client.dbl.postStats(client.guilds.size);
+    }, 1800000);
+  }
 
   client.getBroadcast = async () => {
     return new Promise((resolve, reject) => {
@@ -130,17 +155,6 @@ client.on('ready', () => {
       }
     })
   }
-
-
-
-  client.on('ready', () => {
-    if(client.dbl) {
-      client.dbl.postStats(client.guilds.size);
-      setInterval(() => {
-        client.dbl.postStats(client.guilds.size);
-    }, 1800000);
-    }
-});
 })
 
 client.convertLength = (millisec) => {
