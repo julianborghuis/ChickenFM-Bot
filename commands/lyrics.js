@@ -8,10 +8,7 @@ exports.run = (client, message, args) => {
         .setTitle("One moment...")
     )
 
-    axios.get("https://radio.chickenfm.com/api/nowplaying/1")
-        .then(({data}) => {
-            sendLyrics(data.now_playing.song.text, m)
-        })
+    sendLyrics(client.apiRes.now_playing.song.text, m)
 
       function sendLyrics(q, m){
         axios.get('https://api.ksoft.si/lyrics/search?q='+q, {headers: {'Authorization': 'Bearer '+client.config.ksoft}})

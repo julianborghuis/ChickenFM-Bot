@@ -3,19 +3,18 @@ const axios = require("axios").default
 const moment = require('moment')
 
 exports.run = (client, message, args) => {
-    axios.get("https://radio.chickenfm.com/api/nowplaying/1")
-        .then(({data}) => {
-            const nowplaying = data.now_playing
-            const nextSong = `${data.playing_next.song.text} ${data.playing_next.is_request ? "**[Requested]**" : ""}`
-            const songHistory = data.song_history.map((a, i) => {
-                return `**${moment(a.played_at*1000).fromNow()}**. ${a.song.text} ${a.is_request ? "**[Requested]**" : ""}`;
-            })
+    const data = client.apiRes
+    const nowplaying = data.now_playing
+    const nextSong = `${data.playing_next.song.text} ${data.playing_next.is_request ? "**[Requested]**" : ""}`
+    const songHistory = data.song_history.map((a, i) => {
+        return `**${moment(a.played_at*1000).fromNow()}**. ${a.song.text} ${a.is_request ? "**[Requested]**" : ""}`;
+    })
 
-            const embed = new MessageEmbed()
-                .setTitle("Queue for ChickenFM")
-                .setColor(3447003)
-                .setThumbnail(data.now_playing.song.art)
-                .setDescription(`
+    const embed = new MessageEmbed()
+        .setTitle("Queue for ChickenFM")
+        .setColor(3447003)
+        .setThumbnail(data.now_playing.song.art)
+        .setDescription(`
 ⏩ **Playing next:**
 ${nextSong}
 
@@ -26,8 +25,7 @@ ${nowplaying.song.text} [${client.convertLength(nowplaying.elapsed * 1000)} / ${
 ${songHistory.join("\n")}
 `)
 
-            message.channel.send(embed)
-        })
+    message.channel.send(embed)
 }
 
 exports.info = {
