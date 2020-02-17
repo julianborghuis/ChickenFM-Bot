@@ -40,9 +40,6 @@ exports.run = async (client, message, args) => {
                             collector.stop()
                             msg.delete()
                         }
-                        if(pageNumber + 1 > pages) {
-                            return
-                        }
                         msg.reactions.resolve(r).users.remove(message.author.id).catch(e => {})
                         if(r.emoji.name === "◀️" && pageNumber !== 1) {
                             pageNumber--
@@ -50,7 +47,7 @@ exports.run = async (client, message, args) => {
                                 .setTitle(`Songs on ${station.name} - Page ${pageNumber} / ${pages}`)
                                 .setDescription(constructMap(pageNumber).join("\n"))
                             )
-                        } else if(r.emoji.name === "▶️") {
+                        } else if(r.emoji.name === "▶️" && pageNumber !== pages) {
                             pageNumber++
                             msg.edit(embed
                                 .setTitle(`Songs on ${station.name} - Page ${pageNumber} / ${pages}`)
