@@ -2,12 +2,13 @@ const axios = require('axios')
 const Discord = require("discord.js")
 
 exports.run = (client, message, args) => {
-  axios.get(`https://api.chickenfm.com/api.php?station=1`)
+  const station = args[0] ? client.findStation(args.join(' ')) : client.getGuildStation(message.guild.id) ? client.getGuildStation(message.guild.id) : "ChickenFM"
+  axios.get(`https://api.chickenfm.com/api.php?station=${station.id}`)
     .then(r => {
       const data = r.data;
       const embed = new Discord.MessageEmbed()
         .setAuthor(client.user.username, client.user.avatarURL)
-        .setTitle("Now playing:")
+        .setTitle(`Now playing on ${station.name}:`)
         .setDescription(`${data.track.artist} - ${data.track.title}\n[${client.convertLength(data.elapsed * 1000)}/${client.convertLength(data.duration * 1000)}]`)
         .setFooter(`Made by TheChicken`)
         .setColor(3447003)
