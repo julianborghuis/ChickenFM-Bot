@@ -2,39 +2,66 @@ const axios = require("axios")
 const Discord = require("discord.js")
 
 exports.run = async (client, message, args) => {
-    const m = message.channel.send(new Discord.MessageEmbed()
-        .setTitle("Please wait...")
-    )
-
-    axios.get("https://radio.chickenfm.com/api/station/1/requests")
+    const station = args[0] ? client.findStation(args.join(' ')) : client.getGuildStation(message.guild.id) ? client.getGuildStation(message.guild.id) : client.findStation("ChickenFM")
+    axios.get(`https://radio.chickenfm.com/api/station/${station.id}/requests`)
         .then(r => {
-            const data = r.data
-            if(!args[0]){
-                sendSongs(data)
-            } else if(!args[0].isNaN) {
-                sendSongs(data, args * 10)
+            const arr = r.data
+            const embed = new Discord.MessageEmbed()
+                .setColor(3447003);
+
+            const constructMap = (pageNum) => {
+                pageNum = pageNum * 10 - 10
+
+                const map = arr.map((a, i) => {
+                    return i < pageNum ? '' : `**${i + 1}**. ${a.song.text}`
+                })
+                map.splice(pageNum ? 10 + pageNum : 10, map.length)
+                return map
             }
+            var pageNumber = 1
+            const pages = Math.ceil((arr.length) / 10)
+
+            embed.setDescription(constructMap(pageNumber).join("\n")).setTitle(`Songs on ${station.name} - Page ${pageNumber} / ${pages}`)
+
+            m = message.channel.send(embed)
+                .then(msg => {
+                    msg.react("◀️").then(() => {
+                        msg.react("▶️")
+                    }).then(() => {
+                        msg.react("🗑️")
+                    })
+
+                    const filter = (reaction, user) => ["◀️", "▶️", "🗑️"].includes(reaction.emoji.name) && user.id === message.author.id
+
+                    const collector = msg.createReactionCollector(filter, { time: 120000 });
+
+                    collector.on('collect', r => {
+                        if(r.emoji.name === "🗑️"){
+                            collector.stop()
+                            msg.delete()
+                        }
+                        if(pageNumber + 1 > pages) {
+                            return
+                        }
+                        msg.reactions.resolve(r).users.remove(message.author.id).catch(e => {})
+                        if(r.emoji.name === "◀️" && pageNumber !== 1) {
+                            pageNumber--
+                            msg.edit(embed
+                                .setTitle(`Songs on ${station.name} - Page ${pageNumber} / ${pages}`)
+                                .setDescription(constructMap(pageNumber).join("\n"))
+                            )
+                        } else if(r.emoji.name === "▶️") {
+                            pageNumber++
+                            msg.edit(embed
+                                .setTitle(`Songs on ${station.name} - Page ${pageNumber} / ${pages}`)
+                                .setDescription(constructMap(pageNumber).join("\n"))
+                            )
+                        }
+                    });
+
+                    //collector.on('end', collected => console.log(`Collected ${collected.size} items`));
+                })
         })
-    function sendSongs(arr, number = false){
-        const embed = new Discord.MessageEmbed()
-            .setTitle("Songs")
-            .setColor(3447003);
-        
-        if(number)
-            number = number - 10
-
-        const map = number ? 
-                arr.map((a, i) => { return i < number ? '' : `**${i + 1}**. ${a.song.text}` })
-            :
-                arr.map((a, i) => { return `**${i + 1}**. ${a.song.text}` })
-
-        map.splice(number ? 10 + number : 10, map.length)
-
-        embed.setDescription(map.join("\n"))
-        m.then(m => {
-            m.edit(embed)
-        })
-    }
 }
 exports.info = {
     name: `songs`,
