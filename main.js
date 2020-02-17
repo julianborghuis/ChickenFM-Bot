@@ -82,8 +82,8 @@ client.on("voiceStateUpdate", async function(oldState, newState){
       }
       //console.log('it worked!')
       const connection = await newUserChannel.join()
-      client.getBroadcast().then(bc => {
-        connection.play(bc)
+      client.getBroadcast("ChickenFM").then(bc => {
+        connection.play(bc.broadcast)
       })
     }
   } else if(!newUserChannel){
@@ -93,30 +93,32 @@ client.on("voiceStateUpdate", async function(oldState, newState){
   }
 });
 
-var ws;
-
 const initWS = () => {
-  const ws = new WebSocket('wss://radio.chickenfm.com/api/live/nowplaying/chickenfm');
+  for(var i = 0; i < client.stations.length; i++) {
+    const channel = client.stations[i]
+    const ws = new WebSocket(`wss://radio.chickenfm.com/api/live/nowplaying/${channel.shortcode}`);
   
-  ws.on('open', () => {
-    console.log("[WS] Ready!")
-  });
-  
-  ws.on('message', data => {
-    client.apiRes = JSON.parse(data)
-    client.user.setActivity(`${client.apiRes.now_playing.song.artist}  - ${client.apiRes.now_playing.song.title} | ${client.guilds.size} servers | c!help`, { type: 'LISTENING' })
-  });
-  
-  ws.on('close', () => {
-    initWS()
-  })
+    ws.on('open', () => {
+      console.log(`[WS] ${channel.name} Ready!`)
+    });
+    
+    ws.on('message', data => {
+      const jsonData = JSON.parse(data)
+      client.apiData[jsonData.station.id] = jsonData
+      if(jsonData.station.id == 1){
+        client.user.setActivity(`${client.apiData[1].now_playing.song.artist}  - ${client.apiData[1].now_playing.song.title} | ${client.guilds.size} servers | c!help | ChickenFM.com`, { type: 'LISTENING' })
+      }
+    });
+    
+    ws.on('close', () => {
+      initWS()
+    })
+  }
 }
 
 
 client.on('ready', () => {
   console.log("[D.JS] Ready!")
-
-  initWS()
 
   if(client.dbl) {
     client.dbl.postStats(client.guilds.size);
@@ -124,35 +126,85 @@ client.on('ready', () => {
       client.dbl.postStats(client.guilds.size);
     }, 1800000);
   }
+  
+  axios.get("https://radio.chickenfm.com/api/stations")
+  .then(({data}) => {
+    client.stations = data
+    client.apiData = {}
+    initWS()
+  })
 
-  client.getBroadcast = async () => {
+  client.broadcasts = {}
+  client.dispatchers = {}
+  client.guildStations = {}
+
+  client.findStation = (stationName) => {
+    const station = client.stations.find(e => e.name.toLowerCase().includes(stationName.toLowerCase()))
+    return station ? station : null
+  }
+  client.getApiData = (stationName) => {
+    const station = client.stations.find(e => e.name.toLowerCase().includes(stationName.toLowerCase()))
+    return client.apiData[station.id]
+  }
+  client.setGuildStation = (guildId, stationId) => {
+    const station = client.stations.find(e => e.id == stationId)
+    client.guildStations[guildId] = station
+    return client.guildStations[guildId]
+  }
+  client.getGuildStation = (guildId) => {
+    return client.guildStations[guildId] ? client.guildStations[guildId] : null
+  }
+
+  client.getBroadcast = async (stationName) => {
     return new Promise((resolve, reject) => {
-      if(client.voice.connections.size === 0 || !client.broadcast || !client.dispatcher.writable) {
-        client.broadcast = client.voice.createBroadcast();
-        client.dispatcher = client.broadcast.play("http://78.46.148.53:8000/radio.mp3")
-        client.dispatcher.setVolume(0.5)
-        client.broadcast.on("unsubscribe", dispatcher => {
-          setTimeout(() =>{
-            if(client.voice.connections.size == 0){
-              try {
-                client.dispatcher.end()
-              } catch(e) {
-                void(e)
-              }
-            }
-          }, 1000)
-        })
-        client.broadcast.on("subscribe", dispatcher => {
-          const embed =  new Discord.MessageEmbed()
-            .setColor("GREEN")
-            .setTitle("Playing in a new server!")
-            .setDescription(`I am now playing in \`${dispatcher.player.voiceConnection.channel.name}\` in \`${dispatcher.player.voiceConnection.channel.guild.name}\`.`)
-          client.channels.get(client.config.statsChannel).send(embed)
-        })
-        resolve(client.broadcast)
-      } else if(client.broadcast){
-        resolve(client.broadcast)
+      if (!stationName) {
+        reject("No station provided")
+        return;
+      } else if (typeof (stationName) !== "string") {
+        reject("Station should be a string")
+        return;
       }
+      axios.get("https://radio.chickenfm.com/api/stations")
+        .then(async ({ data }) => {
+          const station = data.find(e => e.name.toLowerCase().includes(stationName.toLowerCase()))
+          if (!station) {
+            reject("No station found!")
+            return;
+          }
+          if (client.voice.connections.size === 0 || client.broadcasts[station.id].subscribers.length == 0 || !client.broadcasts[station.id] || !client.dispatchers[station.id].writable) {
+            client.broadcasts[station.id] = client.voice.createBroadcast();
+            client.dispatchers[station.id] = client.broadcasts[station.id].play(station.listen_url)
+            client.dispatchers[station.id].setVolume(0.5)
+
+            client.broadcasts[station.id].on("unsubscribe", dispatcher => {
+              setTimeout(() => {
+                if (client.broadcasts[station.id].subscribers.length == 0) {
+                  try {
+                    client.dispatchers[station.id].end()
+                  } catch (e) {
+                    console.log(e)
+                  }
+                }
+              }, 2000)
+            })
+
+            client.broadcasts[station.id].on("subscribe", dispatcher => {
+              const embed = new Discord.MessageEmbed()
+                .setColor("GREEN")
+                .setTitle("Playing in a new server!")
+                .setDescription(`I am now playing in \`${dispatcher.player.voiceConnection.channel.name}\` in \`${dispatcher.player.voiceConnection.channel.guild.name}\`.`)
+              try {
+                const channel = client.channels.get(client.config.statsChannel)
+                channel.send(embed)
+              } catch (e) {
+
+              }
+            })
+            resolve({ broadcast: client.broadcasts[station.id], station: station })
+          } else if (client.broadcasts[station.id]) {
+            resolve({ broadcast: client.broadcasts[station.id], station: station })
+          }
+        })
     })
   }
 })
