@@ -3,7 +3,8 @@ const axios = require("axios").default
 const moment = require('moment')
 
 exports.run = (client, message, args) => {
-    const data = client.apiRes
+    const station = args[0] ? client.findStation(args.join(' ')) : client.getGuildStation(message.guild.id) ? client.getGuildStation(message.guild.id) : "ChickenFM"
+    const data = client.apiData[station.id]
     const nowplaying = data.now_playing
     const nextSong = `${data.playing_next.song.text} ${data.playing_next.is_request ? "**[Requested]**" : ""}`
     const songHistory = data.song_history.map((a, i) => {
@@ -11,7 +12,7 @@ exports.run = (client, message, args) => {
     })
 
     const embed = new MessageEmbed()
-        .setTitle("Queue for ChickenFM")
+        .setTitle(`Queue for ${station.name}`)
         .setColor(3447003)
         .setThumbnail(data.now_playing.song.art)
         .setDescription(`
