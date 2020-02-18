@@ -1,14 +1,14 @@
 var axios = require("axios")
 const Discord = require('discord.js');
 
-exports.run = (client, message, args) => {
+exports.run = (client, message, args, station) => {
 
     const m = message.channel.send(new Discord.MessageEmbed()
         .setColor(3447003)
         .setTitle("One moment...")
     )
 
-    sendLyrics(client.getApiData(args[0] ? args.join(" ") : "ChickenFM").now_playing.song.text, m)
+    sendLyrics(client.getApiData(station).now_playing.song.text, m)
 
       function sendLyrics(q, m){
         axios.get('https://api.ksoft.si/lyrics/search?q='+q, {headers: {'Authorization': 'Bearer '+client.config.ksoft}})
@@ -84,4 +84,5 @@ exports.info = {
     aliases: ['l'],
     description: `Get the lyrics of the current song.`,
     usage: `lyrics *or* l`,
+    station: true
 }

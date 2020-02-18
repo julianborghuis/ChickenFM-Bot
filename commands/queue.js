@@ -2,8 +2,7 @@ const { MessageEmbed } = require("discord.js")
 const axios = require("axios").default
 const moment = require('moment')
 
-exports.run = (client, message, args) => {
-    const station = args[0] ? client.findStation(args.join(' ')) : client.getGuildStation(message.guild.id) ? client.getGuildStation(message.guild.id) : "ChickenFM"
+exports.run = (client, message, args, station) => {
     const data = client.apiData[station.id]
     const nowplaying = data.now_playing
     const nextSong = `${data.playing_next.song.text} ${data.playing_next.is_request ? "**[Requested]**" : ""}`
@@ -33,5 +32,6 @@ exports.info = {
     name: `queue`,
     aliases: ['q', 'next', 'history', 'previous'],
     description: `Displays the queue`,
-    usage: `queue`
+    usage: `queue`,
+    station: true
 }

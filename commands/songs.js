@@ -1,8 +1,7 @@
 const axios = require("axios")
 const Discord = require("discord.js")
 
-exports.run = async (client, message, args) => {
-    const station = args[0] ? client.findStation(args.join(' ')) : client.getGuildStation(message.guild.id) ? client.getGuildStation(message.guild.id) : client.findStation("ChickenFM")
+exports.run = async (client, message, args, station) => {
     axios.get(`https://radio.chickenfm.com/api/station/${station.id}/requests`)
         .then(r => {
             const arr = r.data
@@ -64,5 +63,6 @@ exports.info = {
     name: `songs`,
     aliases: [],
     description: `Displays all the songs`,
-    usage: `songs [page number]`
+    usage: `songs [page number]`,
+    station: true
   }

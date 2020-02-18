@@ -1,12 +1,12 @@
 const { MessageEmbed } = require("discord.js")
 const axios = require("axios")
 
-exports.run = async (client, message, args) => {
+exports.run = async (client, message, args, station) => {
   // Only try to join the sender's voice channel if they are in one themselves
   if (client.voice.connections.get(message.guild.id)){
     message.reply(`I'm already playing in \`${client.voice.connections.get(message.guild.id).channel.name}\``)
   } else if (message.member.voice.channel) {
-    client.getBroadcast(args[0] ? args.join(" ") : "ChickenFM")
+    client.getBroadcast(station.name)
     .then(async (broadcast) => {
       axios.get(`https://api.chickenfm.com/api.php?station=${broadcast.station.id}`)
       .then(({data}) => {
@@ -38,5 +38,6 @@ exports.info = {
   name: `play`,
   aliases: ['p'],
   description: `Play ChickenFM in the users current voice channel.`,
-  usage: `play *or* p`
+  usage: `play *or* p`,
+  station: true
 }
