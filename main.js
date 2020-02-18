@@ -142,8 +142,7 @@ client.on('ready', () => {
     const station = client.stations.find(e => e.name.toLowerCase().includes(stationName.toLowerCase()))
     return station ? station : null
   }
-  client.getApiData = (stationName) => {
-    const station = client.stations.find(e => e.name.toLowerCase().includes(stationName.toLowerCase()))
+  client.getApiData = (station) => {
     return client.apiData[station.id]
   }
   client.setGuildStation = (guildId, stationId) => {
