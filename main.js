@@ -106,7 +106,7 @@ const initWS = () => {
       const jsonData = JSON.parse(data)
       client.apiData[jsonData.station.id] = jsonData
       if(jsonData.station.id == 1){
-        client.user.setActivity(`${client.apiData[1].now_playing.song.artist}  - ${client.apiData[1].now_playing.song.title} | ${client.guilds.size} servers | c!help | ChickenFM.com`, { type: 'LISTENING' })
+        client.user.setActivity(`${client.apiData[1].now_playing.song.artist}  - ${client.apiData[1].now_playing.song.title} | ${client.guilds.cache.size} servers | c!help | ChickenFM.com`, { type: 'LISTENING' })
       }
     });
     
@@ -121,9 +121,9 @@ client.on('ready', () => {
   console.log("[D.JS] Ready!")
 
   if(client.dbl) {
-    client.dbl.postStats(client.guilds.size);
+    client.dbl.postStats(client.guilds.cache.size);
     setInterval(() => {
-      client.dbl.postStats(client.guilds.size);
+      client.dbl.postStats(client.guilds.cache.size);
     }, 1800000);
   }
   
@@ -170,7 +170,7 @@ client.on('ready', () => {
             reject("No station found!")
             return;
           }
-          if (client.voice.connections.size === 0 || client.broadcasts[station.id].subscribers.length == 0 || !client.broadcasts[station.id] || !client.dispatchers[station.id].writable) {
+          if (client.voice.connections.size === 0 || !client.broadcasts[station.id] || client.broadcasts[station.id].subscribers.length == 0) {
             client.broadcasts[station.id] = client.voice.createBroadcast();
             client.dispatchers[station.id] = client.broadcasts[station.id].play(station.listen_url)
             client.dispatchers[station.id].setVolume(0.5)
@@ -193,7 +193,7 @@ client.on('ready', () => {
                 .setTitle("Playing in a new server!")
                 .setDescription(`I am now playing in \`${dispatcher.player.voiceConnection.channel.name}\` in \`${dispatcher.player.voiceConnection.channel.guild.name}\`.`)
               try {
-                const channel = client.channels.get(client.config.statsChannel)
+                const channel = client.channels.resolve(client.config.statsChannel)
                 channel.send(embed)
               } catch (e) {
 

@@ -9,7 +9,7 @@ module.exports = (client, guild) => {
   .setDescription(`I was added to ${guild.name}`)
   .addField(`Guild ID`, guild.id)
   .addField(`User count`, guild.memberCount)
-  .addField(`My server count`, client.guilds.size)
+  .addField(`My server count`, client.guilds.cache.size)
   if(guild.iconURL) embed.setThumbnail(guild.iconURL);
-  client.channels.get(client.config.statsChannel).send(embed)
+  client.channels.resolve(client.config.statsChannel).send(embed)
 }

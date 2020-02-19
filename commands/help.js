@@ -20,3 +20,10 @@ Remember to use one of these prefixes:  \`${client.config.prefix.join("`, `")}\`
 `)
     message.channel.send(embed)
 }
+
+exports.info = {
+    name: `help`,
+    aliases: ['h'],
+    description: `Help command`,
+    usage: `help`
+}
