@@ -18,24 +18,33 @@ module.exports = (client, message) => {
   const cmd = client.commands.get(command);
   const alias = client.commandAliases.get(command)
 
-  const station = args[0] ? client.findStation(args.join(' ')) : client.getGuildStation(message.guild.id) ? client.getGuildStation(message.guild.id) : client.findStation("ChickenFM")
 
   if (cmd) {
     try {
-      if(cmd.info.station && !station) {
-        message.reply("No station found!")
+      if(!cmd.info.station) {
+        cmd.run(client, message, args);
       } else {
-        cmd.run(client, message, args, station);
+        const station = args[0] ? client.findStation(args.join(' ')) : client.getGuildStation(message.guild.id) ? client.getGuildStation(message.guild.id) : client.findStation("ChickenFM")
+        if(!station) {
+          message.reply("No station found!")
+        } else {
+          cmd.run(client, message, args, station);
+        }
       }
     } catch(e) {
       console.log(e)
     }
   } else if(alias){
     try {
-      if(alias.info.station && !station) {
-        message.reply("No station found!")
+      if(!alias.info.station) {
+        alias.run(client, message, args);
       } else {
-        alias.run(client, message, args, station)
+        const station = args[0] ? client.findStation(args.join(' ')) : client.getGuildStation(message.guild.id) ? client.getGuildStation(message.guild.id) : client.findStation("ChickenFM")
+        if(!station) {
+          message.reply("No station found!")
+        } else {
+          alias.run(client, message, args, station);
+        }
       }
     } catch(e) {
       console.log(e)
