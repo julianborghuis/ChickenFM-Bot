@@ -1,13 +1,14 @@
 const Discord = require("discord.js");
-const Enmap = require("enmap");
 const fs = require("fs");
 const axios = require("axios")
 const DBL = require("dblapi.js");
 const WebSocket = require('ws');
 
-
 const client = new Discord.Client();
-const config = require("./config.json");
+const config = require("./config.js");
+
+require('./mongo/functions')(client);
+client.mongoose = require('./mongo/mongoose')
 
 let dbl;
 try {
@@ -19,14 +20,6 @@ client.dbl = dbl;
 // Set the config
 client.config = config;
 
-const autoJoinChannels = new Enmap({
-  name: "autoJoinChannels",
-  autoFetch: true,
-  fetchAll: false
-});
-//Bind to 'client'
-client.autoJoinChannels = autoJoinChannels
-
 fs.readdir("./events/", (err, files) => {
   if (err) return console.error(err);
   files.forEach(file => {
@@ -36,8 +29,8 @@ fs.readdir("./events/", (err, files) => {
   });
 });
 
-client.commands = new Enmap();
-client.commandAliases = new Enmap();
+client.commands = new Discord.Collection();
+client.commandAliases = new Discord.Collection();
 
 fs.readdir("./commands/", (err, files) => {
   if (err) return console.error(err);
@@ -69,7 +62,7 @@ client.on("guildMemberAdd", (member) => {
   }
 });
 
-client.on("voiceStateUpdate", async function(oldState, newState){
+/*client.on("voiceStateUpdate", async function(oldState, newState){
   let newMember = newState.member
   let oldMember = oldState.member
   let newUserChannel = newState.channel
@@ -91,7 +84,7 @@ client.on("voiceStateUpdate", async function(oldState, newState){
       oldUserChannel.leave()
     }
   }
-});
+});*/
 
 const initWS = () => {
   for(var i = 0; i < client.stations.length; i++) {
@@ -208,24 +201,5 @@ client.on('ready', () => {
   }
 })
 
-client.convertLength = (millisec) => {
-  // Credit: https://stackoverflow.com/questions/19700283/how-to-convert-time-milliseconds-to-hours-min-sec-format-in-javascript
-  var seconds = (millisec / 1000).toFixed(0);
-  var minutes = Math.floor(seconds / 60);
-  var hours = "";
-  if (minutes > 59) {
-    hours = Math.floor(minutes / 60);
-    hours = (hours >= 10) ? hours : "0" + hours;
-    minutes = minutes - (hours * 60);
-    minutes = (minutes >= 10) ? minutes : "0" + minutes;
-  }
-  // Normally I'd give notes here, but I actually don't understand how this code works.
-  seconds = Math.floor(seconds % 60);
-  seconds = (seconds >= 10) ? seconds : "0" + seconds;
-  if (hours != "") {
-    return hours + ":" + minutes + ":" + seconds;
-  }
-  return minutes + ":" + seconds;
-}
-
 client.login(config.TOKEN);
+client.mongoose.init();
