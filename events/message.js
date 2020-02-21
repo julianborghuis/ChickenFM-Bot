@@ -13,8 +13,7 @@ module.exports = async (client, message) => {
     const newGuild = {
       guildID: guild.id,
       guildName: guild.name,
-      ownerID: guild.ownerID,
-      ownerUsername: guild.owner.user.tag
+      ownerID: guild.ownerID
     };
   
     try {
