@@ -9,16 +9,18 @@ exports.run = async (client, message, args) => {
         .setColor(3447003)
         .setDescription(`
 \`autojoin\`: Enables or disables the autojoin feature.
-\`play\` or \`p\`: Plays ChickenFM in the users current channel.
+\`play [station]\`: Plays ChickenFM in the users current channel.
 \`stop\` or \`leave\`: Stops playing.
-\`songs [page number]\`: Displays all available songs.
-\`queue\`: Displays the queue
+\`songs\`: Displays all available songs.
+\`queue [station]\`: Displays the queue
 \`help\`: Displays this.
-\`nowplaying\` or \`np\`: Displays the current playing track.
+\`nowplaying [station]\`: Displays the current playing track.
 \`request\` or \`r\`: Request a song.
-\`lyrics\` or \`l\`: Displays the lyrics of the current song.
+\`lyrics [station]\`: Displays the lyrics of the current song.
+\`prefix [add/set/remove]\`: Add, set or remove the prefix of this bot.
 
 Remember to use one of these prefixes:  \`${settings.prefix.join("`, `")}\`
+You can see all stations with \`${settings.prefix[0]}stations\`.
 `)
     message.channel.send(embed)
 }

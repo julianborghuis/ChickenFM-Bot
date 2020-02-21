@@ -8,21 +8,6 @@ module.exports = async (client, message) => {
 
   // Ignore messages not starting with the prefix
   const settings = await client.getGuild(message.guild)
-  if(!settings) {
-    const newGuild = {
-      guildID: guild.id,
-      guildName: guild.name,
-      ownerID: guild.ownerID,
-      ownerUsername: guild.owner.user.tag
-    };
-  
-    try {
-      await client.createGuild(newGuild);
-    } catch (error) {
-      console.error(error);
-    }
-    return;
-  }
   const prefixes = settings.prefix
   let prefix = false;
   for (const thisPrefix of prefixes) {
