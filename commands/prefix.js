@@ -1,26 +1,26 @@
 const { MessageEmbed } = require("discord.js")
 
 exports.run = async (client, message, args) => {
-    if (!message.member.hasPermission('MANAGE_CHANNELS')) {
-        return;
-    }
     const baseEmbed = new MessageEmbed()
         .setColor(client.config.embedColor)
         .setTitle(`Prefix`)
 
+    if(!args[0]){
+        const settings = await client.getGuild(message.guild)
+        const embed = baseEmbed
+            .setDescription(`My prefixes are \`${settings.prefix.join(`\`, \``)}\`\n\nSet a new prefix with \`${settings.prefix[0]}prefix set\`\nAdd a prefix with \`${settings.prefix[0]}prefix add\``)
+
+        message.channel.send(embed)
+        return;
+    }
     const filter = response => {
         return response.author.id === message.author.id
     };
-
+    if (!message.member.hasPermission('MANAGE_MESSAGES')) {
+        return;
+    }
+    
     switch (args[0]) {
-        case undefined:
-            const settings = await client.getGuild(message.guild)
-            const embed = baseEmbed
-                .setDescription(`My prefixes are \`${settings.prefix.join(`\`, \``)}\`\n\nSet a new prefix with \`${settings.prefix[0]}prefix set\``)
-
-            message.channel.send(embed)
-            break;
-
         case 'set':
             message.channel.send(baseEmbed.setDescription(`Type my new prefix in chat!`)).then((m) => {
                 message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ['time'] })
@@ -68,7 +68,7 @@ exports.run = async (client, message, args) => {
                     .then(async collected => {
                         const settings = await client.getGuild(message.guild)
                         const newPrefixes = settings.prefix
-                        
+
                         const removePrefix = collected.first().content
                         const removeIndex = newPrefixes.indexOf(removePrefix);
                         if (removeIndex !== -1){
@@ -94,7 +94,7 @@ exports.run = async (client, message, args) => {
 
 exports.info = {
     name: `prefix`,
-    aliases: [],
+    aliases: ['prefixes'],
     description: `Set the prefix of this bot`,
     usage: `prefix <new prefix>`,
     station: false
