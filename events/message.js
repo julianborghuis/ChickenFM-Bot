@@ -1,15 +1,35 @@
-module.exports = (client, message) => {
+module.exports = async (client, message) => {
   // Ignore all bots
   if (message.author.bot) return;
 
-  // Ignore messages not starting with the prefix (in config.json)
-  const prefixes = require('../config.json').prefix
+  if (message.channel.type === 'dm') {
+    return message.channel.send("Please join a server to use me \nJoin the ChickenFM Discord server here: https://l.chickenfm.com/discord");
+  }
+
+  // Ignore messages not starting with the prefix
+  const settings = await client.getGuild(message.guild)
+  if(!settings) {
+    const newGuild = {
+      guildID: guild.id,
+      guildName: guild.name,
+      ownerID: guild.ownerID,
+      ownerUsername: guild.owner.user.tag
+    };
+  
+    try {
+      await client.createGuild(newGuild);
+    } catch (error) {
+      console.error(error);
+    }
+    return;
+  }
+  const prefixes = settings.prefix
   let prefix = false;
   for (const thisPrefix of prefixes) {
       if (message.content.toLowerCase().startsWith(thisPrefix)) prefix = thisPrefix;
   }
 
-  // Ignore messages not starting with the prefix (in config.json)
+  // Ignore messages not starting with the prefix
   if (message.content.toLowerCase().indexOf(prefix) !== 0) return;
 
   const args = message.content.slice(prefix.length).trim().split(/ +/g);
