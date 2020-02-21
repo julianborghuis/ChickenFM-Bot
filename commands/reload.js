@@ -5,6 +5,25 @@ exports.run = async (client, message, args) => {
     if(!args || args.length < 1) {
         await exec("git pull")
         message.channel.send("Git pulled!")
+        await fs.readdir("./commands/", (err, files) => {
+            if (err) return console.error(err);
+            files.forEach(file => {
+                if (!file.endsWith(".js")) return;
+                let props = require(`./commands/${file}`);
+                let commandName = file.split(".")[0];
+                console.log(`Attempting to load command ${commandName}`);
+                client.commands.set(commandName, props);
+
+                if (props.info) {
+                    if (props.info.aliases) {
+                        for (i = 0; i < props.info.aliases.length; i++) {
+                            client.commandAliases.set(props.info.aliases[i], props)
+                        }
+                    }
+                }
+            });
+        });
+        message.channel.send("Commands reloaded!")
         return;
     }
     const commandName = args[0];
