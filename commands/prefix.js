@@ -16,7 +16,7 @@ exports.run = async (client, message, args) => {
     const filter = response => {
         return response.author.id === message.author.id
     };
-    if (!message.member.hasPermission('MANAGE_MESSAGES')) {
+    if (!message.member.hasPermission('MANAGE_MESSAGES') && message.author.id !== client.config.ownerID) {
         return;
     }
     
