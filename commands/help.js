@@ -1,6 +1,8 @@
 const { MessageEmbed } = require("discord.js")
 
-exports.run = (client, message, args) => {
+exports.run = async (client, message, args) => {
+    const settings = await client.getGuild(message.guild)
+
     const embed  = new MessageEmbed()
         .setAuthor(client.user.username, client.user.avatarURL)
         .setTitle("Commands")
@@ -16,7 +18,7 @@ exports.run = (client, message, args) => {
 \`request\` or \`r\`: Request a song.
 \`lyrics\` or \`l\`: Displays the lyrics of the current song.
 
-Remember to use one of these prefixes:  \`${client.config.prefix.join("`, `")}\`
+Remember to use one of these prefixes:  \`${settings.prefix.join("`, `")}\`
 `)
     message.channel.send(embed)
 }

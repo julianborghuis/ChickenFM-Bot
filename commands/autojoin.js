@@ -1,11 +1,13 @@
 const { MessageEmbed } = require("discord.js")
 
-exports.run = (client, message, args) => {
+exports.run = async (client, message, args) => {
+    const settings = await client.getGuild(message.guild)
+
     if(!args[0]){
         return message.channel.send(new MessageEmbed()
             .setTitle("AutoJoin command")
-            .setDescription(`To make ChickenFM automatically join the voice channel, simply join the voice channel you want to link me to and type \`${client.config.prefix[0]}autojoin enable\``)
-            .addField(`Permissions needed`, "`MANAGE_CHANNELS`")
+            .setDescription(`To make ChickenFM automatically join the voice channel, simply join the voice channel you want to link me to and type \`${settings.prefix[0]}autojoin enable\``)
+            .addField(`Permissions required`, "`MANAGE_CHANNELS`")
         );
     }
     if(args[0] === "enable"){
@@ -17,7 +19,7 @@ exports.run = (client, message, args) => {
         }
         if(message.member.voice.channel){
             try {
-                client.autoJoinChannels.set(message.member.voice.channel.id, {autojoin: true})
+                client.updateGuild(message.guild, { autoJoinChannel: message.member.voice.channel.id });
             } catch(e) {
                 return message.channel.send(new MessageEmbed()
                     .setColor("RED")
@@ -42,7 +44,7 @@ exports.run = (client, message, args) => {
             )
         }
         try {
-            client.autoJoinChannels.delete(message.member.voice.channel.id)
+            client.updateGuild(message.guild, { autoJoinChannel: message.member.voice.channel.id });
         } catch(e) {
             return message.channel.send(new MessageEmbed()
                 .setColor("RED")
