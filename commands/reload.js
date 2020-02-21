@@ -1,5 +1,12 @@
-exports.run = (client, message, args) => {
-    if(!args || args.length < 1) return message.reply("Must provide a command name to reload.");
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
+exports.run = async (client, message, args) => {
+    if(!args || args.length < 1) {
+        await exec("git pull")
+        message.channel.send("Git pulled!")
+        return;
+    }
     const commandName = args[0];
     // Check if the command exists and is valid
     if(!client.commands.has(commandName)) {
