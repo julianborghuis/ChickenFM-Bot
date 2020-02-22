@@ -94,7 +94,7 @@ const initWS = () => {
       if(jsonData.station.id == 1){
         (async function(){
           const guilds = await client.shard.fetchClientValues('guilds.cache.size')
-          client.user.setActivity(`${client.apiData[1].now_playing.song.artist}  - ${client.apiData[1].now_playing.song.title} | ${guilds.reduce((prev, guildCount) => prev + guildCount, 0)} servers | ${client.shard.count} shards | c!help | ChickenFM.com`, { type: 'LISTENING' })  
+          client.user.setActivity(`${client.apiData[1].now_playing.song.artist}  - ${client.apiData[1].now_playing.song.title} | ${guilds.reduce((prev, guildCount) => prev + guildCount, 0)} servers | shard ${client.shard.ids[0]} of ${client.shard.count} | c!help | ChickenFM.com`, { type: 'LISTENING' })  
         })()
       }
     });
