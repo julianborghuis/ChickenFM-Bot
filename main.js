@@ -10,11 +10,9 @@ const config = require("./config.js");
 require('./mongo/functions')(client);
 client.mongoose = require('./mongo/mongoose')
 
-let dbl;
-try {
-  dbl = new DBL(config.DBLApiKey, client)
-  .catch(e => {})
-} catch (e) {}
+
+const dbl = new DBL(config.DBLApiKey, client)
+
 client.dbl = dbl;
 
 // Set the config
