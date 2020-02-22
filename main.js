@@ -99,7 +99,10 @@ const initWS = () => {
       const jsonData = JSON.parse(data)
       client.apiData[jsonData.station.id] = jsonData
       if(jsonData.station.id == 1){
-        client.user.setActivity(`${client.apiData[1].now_playing.song.artist}  - ${client.apiData[1].now_playing.song.title} | ${client.guilds.cache.size} servers | c!help | ChickenFM.com`, { type: 'LISTENING' })
+        (async function(){
+          const guilds = await client.shard.fetchClientValues('guilds.cache.size')
+          client.user.setActivity(`${client.apiData[1].now_playing.song.artist}  - ${client.apiData[1].now_playing.song.title} | ${guilds.reduce((prev, guildCount) => prev + guildCount, 0)} servers | ${client.shard.count} shards | c!help | ChickenFM.com`, { type: 'LISTENING' })  
+        })()
       }
     });
     
