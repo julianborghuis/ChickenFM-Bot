@@ -10,11 +10,6 @@ const config = require("./config.js");
 require('./mongo/functions')(client);
 client.mongoose = require('./mongo/mongoose')
 
-
-const dbl = new DBL(config.DBLApiKey, client)
-
-client.dbl = dbl;
-
 // Set the config
 client.config = config;
 
@@ -112,17 +107,16 @@ const initWS = () => {
 
 
 client.on('ready', () => {
+  const dbl = new DBL(config.DBLApiKey, client)
+  client.dbl = dbl;
+  
   console.log("[D.JS] Ready!")
 
   if(client.dbl) {
-    (async function() {
-      const guilds = await client.shard.fetchClientValues('guilds.cache.size')
-      client.dbl.postStats(guilds.reduce((prev, guildCount) => prev + guildCount, 0), client.shard.ids[0], client.shard.count);
-      setInterval(async () => {
-        const guilds = await client.shard.fetchClientValues('guilds.cache.size')
-        client.dbl.postStats(guilds.reduce((prev, guildCount) => prev + guildCount, 0), client.shard.ids[0], client.shard.count);
-      }, 1800000);
-    })()
+    client.dbl.postStats(client.guilds.cache.size, client.shard.ids[0], client.shard.count);
+    setInterval(async () => {
+      client.dbl.postStats(client.guilds.cache.size, client.shard.ids[0], client.shard.count);
+    }, 1800000);
   }
   
   axios.get("https://radio.chickenfm.com/api/stations")
