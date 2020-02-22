@@ -117,12 +117,14 @@ client.on('ready', () => {
   console.log("[D.JS] Ready!")
 
   if(client.dbl) {
-    const guilds = await client.shard.fetchClientValues('guilds.cache.size')
-    client.dbl.postStats(guilds.reduce((prev, guildCount) => prev + guildCount, 0), client.shard.ids[0], client.shard.count);
-    setInterval(() => {
+    (async function() {
       const guilds = await client.shard.fetchClientValues('guilds.cache.size')
       client.dbl.postStats(guilds.reduce((prev, guildCount) => prev + guildCount, 0), client.shard.ids[0], client.shard.count);
-    }, 1800000);
+      setInterval(() => {
+        const guilds = await client.shard.fetchClientValues('guilds.cache.size')
+        client.dbl.postStats(guilds.reduce((prev, guildCount) => prev + guildCount, 0), client.shard.ids[0], client.shard.count);
+      }, 1800000);
+    })
   }
   
   axios.get("https://radio.chickenfm.com/api/stations")
