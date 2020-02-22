@@ -107,8 +107,14 @@ const initWS = () => {
 
 
 client.on('ready', () => {
-  const dbl = new DBL(config.DBLApiKey, client)
-  client.dbl = dbl;
+  if(config.DBLApiKey){
+    const dbl = new DBL(config.DBLApiKey, client)
+    client.dbl = dbl;
+  }
+
+  if(!client.shard || client.shard.ids[0] === 0){
+    require('./api').run(client)
+  }
   
   console.log("[D.JS] Ready!")
 

@@ -21,6 +21,7 @@
     "axios": "^0.19.2",
     "dblapi.js": "^2.3.1",
     "discord.js": "github:discordjs/discord.js",
+    "express": "^4.17.1",
     "ffmpeg": "0.0.4",
     "fs": "0.0.1-security",
     "moment": "^2.24.0",
