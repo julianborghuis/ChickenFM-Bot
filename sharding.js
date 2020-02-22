@@ -6,5 +6,5 @@ manager.on('message', (shard, message) => {
 	console.log(`Shard[${shard.id}] : ${message._eval} : ${message._result}`);
 });
 
-manager.spawn('auto');
+manager.spawn(3);
 manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`));
