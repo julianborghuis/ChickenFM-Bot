@@ -117,9 +117,11 @@ client.on('ready', () => {
   console.log("[D.JS] Ready!")
 
   if(client.dbl) {
-    client.dbl.postStats(client.guilds.cache.size);
+    const guilds = await client.shard.fetchClientValues('guilds.cache.size')
+    client.dbl.postStats(guilds.reduce((prev, guildCount) => prev + guildCount, 0), client.shard.ids[0], client.shard.count);
     setInterval(() => {
-      client.dbl.postStats(client.guilds.cache.size);
+      const guilds = await client.shard.fetchClientValues('guilds.cache.size')
+      client.dbl.postStats(guilds.reduce((prev, guildCount) => prev + guildCount, 0), client.shard.ids[0], client.shard.count);
     }, 1800000);
   }
   
