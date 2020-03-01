@@ -6,7 +6,7 @@ function clean(text) { // For Eval
         else
             return text;
     }
-exports.run = (client, message, args) => {
+exports.run = async (client, message, args) => {
   if(![client.config.ownerID].some(a => message.author.id == a))
           return message.channel.send(`You tried...`);
   try {
