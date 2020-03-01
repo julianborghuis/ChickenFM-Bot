@@ -11,7 +11,7 @@ exports.run = (client, message, args) => {
           return message.channel.send(`You tried...`);
   try {
         const code = args.join(' ');
-        let evaled = eval(code);
+        let evaled = (args[0] === "async") ? args.shift() && await eval(code) : eval(code)
         if(typeof evaled !== 'string')
             evaled = require('util').inspect(evaled);
 
